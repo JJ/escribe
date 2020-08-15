@@ -265,9 +265,9 @@ done_testing;
 	  </section>
 
 	  <section data-background='https://live.staticflickr.com/5099/5453759007_2aefe8c94e_k_d.jpg'><h2>PR en 3 pasos</h2>
-	    <h2 class='fragment'>Copia del repo</h2>
-	    <h2 class='fragment'>Modificación</h2>
-	    <h2 class='fragment'>Solicitud de incorporación</h2>
+	    <h2 class='fragment'>① Copia del repo</h2>
+	    <h2 class='fragment'>② Modificación</h2>
+	    <h2 class='fragment'>③ Solicitud de incorporación</h2>
 	  </section>
 
 	  <section data-background='https://live.staticflickr.com/8251/8665197773_b31a25a027_o_d.jpg'>
@@ -284,9 +284,52 @@ done_testing;
 	  
 	</section>
 
+	<section>
+	  <section data-background='https://live.staticflickr.com/853/30092790268_ac1787742c_k_d.jpg'><h1>Por último</h1>
+	    <h2 class='fragment fade-in-then-out'><strike>Desplegar a producción</strike></h2>
+	  <h1 class='fragment'>Publicar</h1>
+	</section>
+
+	  <section data-background='https://live.staticflickr.com/8351/8403927805_6fafa085e5_o_d.jpg'><h1>No existe un API para publicar</h1>
+	    <aside class='notes'>Pero se pueden hacer algunos tests conocidos.</aside>
+	  </section>
+
+	  <section><pre><code data-line-numbers="7|10"># Flag codeblocks with length bigger than a particular number
+use Text::Markdown;
+sub MAIN( $dir = "txt/", $length = 60 ) {
+    for $dir.IO.dir(:test(/ ".md" $/)) -> $f {
+	my @items =  Text::Markdown::Document.new($f.slurp()).items;
+	say ( @items 
+	      ==> grep( { $^þ ~~ Text::Markdown::CodeBlock } )
+	      ==> map( { .text.split("\n") } )
+	      ==> flat()
+	      ==> grep( { .chars > $length }  )
+	      ==> map( { "‣$f → $^þ\n ⤷ is "~ $^þ.chars ~" characters long" } )
+	      ==> join( "\n" xx 2 ) );	
+    }
+}</code></pre>
+
+	    <aside class='notes'>Por ejemplo, Amazon requiere que no haya ninguna línea con más de n caracteres: hay que comprobar que el código, que se representa literalmente, cumple esa condición. Si no, Amazon te rechazará el manuscrito, y es algo que se puede hacer sólo a través de un formulario sin API posible; esto ahorra bastante trabajo. Esto está escrito en Raku, mi lenguaje favorito, hecho originalmente para un manual... de Raku, que entonces se llamaba perl 6. </aside>
+	  </section>
+
+	  <section><h2>🧰 Extraer/acortar URLs, generar formatos finales...</h2 >
+	    <pre><code data-line-numbers="2|7">utils/expande-URLs.py 
+pandoc --template="$PWD"/utils/plantilla.latex \
+    -V lang=es-ES \
+    -V author='JJ Merelo' -V title='Playa Granada: Arquitectura e Historia'\
+    -V documentclass=book\
+    -S --latex-engine=xelatex \
+    -o playa-granada-kdp.pdf \
+    intro-links.md  pois/pueblo-del-chirimoyo-links.md\
+    (...) pois/iglesia-josefina-bakhita-links.md --toc
+		rm *-links.md pois/*-links.md</code></pre>
+	    <aside class='notes'>Una vez más, es un shell script que parece más difícil de lo que es... Con uno similar se genera ePub, también. Pero una vez que se ha hecho una vez, ya es simplemente copiar y cambiar nombres de fichero.</aside>
+	  </section>
+	</section>
 	
 	<section> <!-- concluyendo -->
-	  <section><blockquote>Un libro no se termina se abandona</blockquote>
+	  <section><blockquote>Un libro no se termina,</blockquote>
+	    <blockquote class='fragment fade-in'>se abandona</blockquote>
 	    <h1>Gabriel García Márquez</h1>
 	    <aside class='notes'>Sacado de <a href='https://cofradiadeescritoresdepuertorico.wordpress.com/2014/11/06/escribir-es-reescribir/'>aquí</a></aside>
 	  </section>
