@@ -1,0 +1,3 @@
+Este es un mensaje bueno
+
+Este es malo por otra razón y es porque tiene una línea demasiado larga, más de los 80 caracteres que son los permitidos habitualmente.
