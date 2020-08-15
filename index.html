@@ -201,7 +201,7 @@ if lines.size > 0
     exit 255
   end
 end</code></pre>
-  <aside class='notes'>Se copia a <code>.git/hooks/commit_msg</code>; este script se ejecutará justo antes de crear el commit y no lo permitirá si no se cumplen las reglas. Pero no es el único que se puede pensar para controlar el proceso de escritura; en realidad no hay límites en lo que se puede testear (y aceptar o rechazar).</aside>
+  <aside class='notes'>Se copia a <code>.git/hooks/commit_msg</code>; este script se ejecutará justo antes de crear el commit y no lo permitirá si no se cumplen las reglas. Pero no es el único que se puede pensar para controlar el proceso de escritura; en realidad no hay límites en lo que se puede testear (y aceptar o rechazar). La clave del script es que salga con un código de error correcto (0) si el commit está bien, cualquier otro código si no. Eso se consigue con la orden <code>abort</code> de Ruby.</aside>
 </section>
 
 
@@ -210,14 +210,59 @@ end</code></pre>
 	</section>
 	</section>
 
+	<!-- reescritura -->
+	<section>
+	  <section>
+	    <blockquote>La única clase de escritura es la reescritura</blockquote>
+	    <h2>Ernest Hemingway</h2>
+	    <blockquote>La buena escritura es reescritura</blockquote>
+	    <h2>Truman Capote</h2>
+	    <aside class='notes'>Carlos Ruiz Zafón decía: se escribe para uno mismo, se reescribe para los demás. Y es posible que sea así, pero lo cierto es que corregir, tachar como decía Juan Rulfo, es esencial al proceso de escritura, recordemos el "Hay que aprender a tachar" del mismo Juan.</aside>
+	  </section>
+
+	  <section><h2>☝ encontrar errores ortográficos.</h2>
+	    <h1 class='fragment'>Usando tests unitarios e integración continua.</h1>
+	    <aside class='notes'>Test unitarios son tests usados para funciones específicas de un programa. Integración continua permite, en este caso, añadir al texto cualquier fragmento nuevo. En el proceso de escritura, escritura y reescritura son simultáneos. Una herramienta de integración continua te permite ejecutar tests unitarios cada vez que "integras" (añades un commit) a tu novela.</aside>
+	  </section>
+
+	  <section><h1>Integración continua fácil</h1>
+	    <code><pre>language: perl
+perl:
+  - "5.16"
+before_install:
+  - sudo apt-get install libhunspell-1.3-0 libhunspell-dev
+  - curl https://raw.githubusercontent.com/JJ/Test-Text/master/data/Spanish.aff -o Spanish.aff
+  - curl https://raw.githubusercontent.com/SublimeText/Dictionaries/master/Spanish.dic -o Spanish.dic
+install: cpanm Test::Text TAP::Harness
+script: perl -MTAP::Harness -e 'use utf8;\
+my $harness = TAP::Harness->new( { verbosity => 0} );\
+die "FAIL" if $harness->runtests( "just_check.t" )->failed;'</pre></code>
+	</section>
+
+	  <section><h1>Comprueba y ya está.</h1>
+	    <pre><code>use Test::Text;
+for my $dir (qw(. pois) ) {
+  my $tesxt = Test::Text->new($dir, ".", "Spanish", @_);
+  $tesxt->check();
+}
+done_testing;
+	    </code></pre>
+	    <aside class='notes'>¿Recordáis la novela "Manny, the Magnificent Mechanical Man", que he mencionado anteriormente? Para que fuera fácil trabajar con ella, creé este módulo en Perl, que "limpia" Markdown (elimina código, por ejemplo) y le pasa el corrector ortográfico, indicándote las palabras que no conoce. Te permite tener un diccionario específico, usando por debajo un módulo que se llama <code>hunspell</code>. Parece complicado, pero en realidad es usar de forma extensiva las facilidades que te ofrece GitHub con sus "ganchos" a sistemas de integración continua como Travis (o, últimamente, GitHub actions).</aside>
+	  </section>
 	<section> <!-- concluyendo -->
+	  <section><blockquote>Un libro no se termina se abandona</blockquote>
+	    <h1>Gabriel García Márquez</h1>
+	    <aside class='notes'>Sacado de <a href='https://cofradiadeescritoresdepuertorico.wordpress.com/2014/11/06/escribir-es-reescribir/'>aquí</a></aside>
+	  </section>
+	  
 	  <section><blockquote>La industria convirtió a libros y escritores en objetos de mercado.</blockquote>
 	    <h1>Laura Esquivel</h1>
 	    <aside class='notes'>Extraído de <a href='https://fabiosa.es/las-15-frases-mas-memorables-de-laura-esquivel/'>este conjunto de citas.</a>.
 	    </aside>
 	  </section>
 
-	  <section><h1>Liberemos la escritura</h1>
+	  <section><h1>No abandonemos nuestros libros</h1>
+	    <h1 class='fragment'>Liberemos la escritura</h1>
 	    <h1 class='fragment'>Usando herramientas y licencias libres.</h1>
 	  </section>
 
